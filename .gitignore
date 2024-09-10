@@ -1,0 +1,5 @@
+# Ignore the virtual environment folder
+venv/
+
+# Ignore config folders (replace with actual folder names if different)
+config/
