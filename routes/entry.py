@@ -10,7 +10,8 @@ entry_root = APIRouter()
 def api_runner():
     response =  {
         'status': 'ok',
-        'message': 'API is running'
+        'message': 'API is running',
+        'appendix': 'add /docs to see the API documentation'
     }
 
     return response

@@ -61,7 +61,14 @@ def UpdateBlog(_id: str, data: UpdateBlogModel):
 
     return request
     
+# delete a blog
+@blog_root.delete('/delete/{_id}')
+def DeleteBlog(_id: str):
+    response = blogs_collection.delete_one({"_id": ObjectId(_id)})
 
-
+    return {
+        'status': 'ok',
+        'id of deleted blog': _id
+    }
 
 
