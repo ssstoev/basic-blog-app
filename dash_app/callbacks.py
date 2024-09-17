@@ -56,21 +56,32 @@ def open_modal(n1, n2, is_open):
 
 @callback(
     Output("blog-feed", "children"),
-    [Input("search-blogs-button", "n_clicks")]
+    Input("search-blogs-button", "n_clicks"),
+    State('search-field', 'value')
 )
-def update_blog_feed(n_clicks):
+
+def update_blog_feed(n_clicks, search_query):
     if n_clicks:
-        try:
-            response = requests.get("http://127.0.0.1:8000/all/blogs")
-            response.raise_for_status()
-            blogs = response.json().get('data', [])
-        except requests.RequestException as e:
-            return [html.P(f"Error: {str(e)}")]
+        if search_query:
+            response = requests.get(f"http://127.0.0.1:8000/blog/{search_query}")
+            # put the result in a list even though it is a single dict
+            blogs = [response.json().get('data', [])]
         
-        # Create HTML content for blog feed
-        if not blogs:
-            return [html.P("No blogs found.")]
-        
+        else:
+            try:
+                response = requests.get("http://127.0.0.1:8000/all/blogs")
+
+                # check the status code
+                response.raise_for_status()
+                blogs = response.json().get('data', [])
+
+            except requests.RequestException as e:
+                return [html.P(f"Error: {str(e)}")]
+            
+            # Create HTML content for blog feed
+            if not blogs:
+                return [html.P("No blogs found.")]
+            
         feed = []
         for blog in blogs:
             feed.append(
@@ -87,7 +98,8 @@ def update_blog_feed(n_clicks):
                 )
             )
         return feed
-    return []
+        
+    return [html.P("Enter a search query")]
 
 
 # # Callback to search blogs and update the feed

@@ -39,11 +39,15 @@ def create_layout():
                                 # Blog feed to display the latest blogs or search results
                                 html.Div(id="blog-feed", children=[]),
                                 )
-                            )
+                            ), width=6
                         ),
 
                         # the AI assistance col
-                        dbc.Col()
+                        dbc.Col(dbc.Card([
+                            dbc.CardHeader(),
+                            dbc.CardBody()
+                            ]
+                        ), width=6)
                         ],
                         style={'padding-top': '40px'}
                     ),
