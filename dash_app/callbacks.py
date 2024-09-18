@@ -93,15 +93,26 @@ def update_blog_feed(n_clicks, n_intervals, search_query):
     elif n_clicks > 0:
 
         if search_query:
-            try:
-                response = requests.get(f"http://127.0.0.1:8000/blog/{search_query}")
+            # try:
+            #     response = requests.get(f"http://127.0.0.1:8000/blog/{search_query}")
 
-                # put the result in a list even though it is a single dict
-                blogs = [response.json().get('data', [])]
-                # print(len(blogs))
+            #     # put the result in a list even though it is a single dict
+            #     blogs = [response.json().get('data', [])]
+            #     # print(len(blogs))
+            
+            # except requests.RequestException as e:
+            #     return [html.P("No blogs match your search criteria")]
+
+            try:
+                response = requests.get(f"http://127.0.0.1:8000/search/blogs/{search_query}")
+                response.raise_for_status()  # Ensure the request was successful
+                blogs = response.json().get('data', [])
+                
+                if not blogs:
+                    return [html.P(f"No blogs found for keyword: {search_query}")]
             
             except requests.RequestException as e:
-                return [html.P("No blogs match your search criteria")]
+                return [html.P(f"Error searching blogs: {str(e)}")]
             
         feed = []
         for blog in blogs:

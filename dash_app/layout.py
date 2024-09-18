@@ -9,7 +9,7 @@ def create_layout():
                     dbc.Row(dbc.Navbar(
                         dbc.Container(
                             [
-                                dbc.NavbarBrand("Blog App", className="ms-2"),  # Blog App title
+                                dbc.NavbarBrand(html.B("Blog App", style={"fontSize": "2rem"}), className="ms-2"),  # Blog App title
                                 dbc.Nav(
                                     dbc.NavItem(dbc.Button("Create Post", id='create-post-button', color="primary", className="ms-2")),  # Create Post button
                                     className="ms-auto",  # Push the button to the right
@@ -35,17 +35,28 @@ def create_layout():
                     dbc.Row([
                         # the news feed col
                         dbc.Col(
-                            dbc.Card(
+                            dbc.Card([
+                                dbc.CardHeader(html.P(
+                                    html.B('News Feed'),
+                                    style={'fontSize': '2rem'},
+                                    className='text-center')),
+
                                 dbc.CardBody(
                                 # Blog feed to display the latest blogs or search results
                                 html.Div(id="blog-feed", children=[]),
                                 )
-                            ), width=6
+                    ]), width=6
                         ),
 
                         # the AI assistance col
                         dbc.Col(dbc.Card([
-                            dbc.CardHeader(),
+                            dbc.CardHeader(
+                                html.P(
+                                    html.B('AI Q&A'),
+                                    className='text-center',
+                                    style={'fontSize': '2rem'}
+                                )
+                            ),
                             dbc.CardBody()
                             ]
                         ), width=6)

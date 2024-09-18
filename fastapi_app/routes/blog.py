@@ -72,3 +72,22 @@ def DeleteBlog(_id: str):
     }
 
 
+# search by keyword
+@blog_root.get("/search/blogs/{keyword}")
+def search_blogs(keyword: str):
+    query = {
+        "$or": [
+            {"title": {"$regex": keyword, "$options": "i"}},  # $options is for Case-insensitive search
+            {"sub_title": {"$regex": keyword, "$options": "i"}},
+            {"content": {"$regex": keyword, "$options": "i"}},
+            {"author": {"$regex": keyword, "$options": "i"}},
+            {"tags": {"$regex": keyword, "$options": "i"}}
+        ]
+    }
+    response = blogs_collection.find(query)
+    decoded_data = DecodeBlogs(response)
+    
+    return {
+        "status": "ok",
+        "data": decoded_data
+    }
