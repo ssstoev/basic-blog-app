@@ -31,6 +31,7 @@ def create_layout():
                         dbc.Col(dbc.Button('Search', id='search-blogs-button'), width=1)
                     ]),
 
+                    dcc.Interval(id='page-load-trigger', n_intervals=0, max_intervals=1),
                     dbc.Row([
                         # the news feed col
                         dbc.Col(
@@ -93,7 +94,7 @@ def create_layout():
                                 ]),
                                     dbc.ModalFooter(
                                         dbc.Button(
-                                            "Close", id="close-create-blog-button", className="ms-auto", n_clicks=0
+                                            "Close", id="close-create-blog-button", className="ms-auto", n_clicks=0, color='danger'
                                         )
                                     ),
                                 ],

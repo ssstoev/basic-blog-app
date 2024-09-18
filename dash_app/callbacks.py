@@ -53,34 +53,55 @@ def open_modal(n1, n2, is_open):
         return not is_open
     return is_open
 
-
+#update the blog feed when you click search
 @callback(
     Output("blog-feed", "children"),
-    Input("search-blogs-button", "n_clicks"),
+    [Input("search-blogs-button", "n_clicks"), Input("page-load-trigger", "n_intervals")],
     State('search-field', 'value')
 )
 
-def update_blog_feed(n_clicks, search_query):
-    if n_clicks:
-        if search_query:
-            response = requests.get(f"http://127.0.0.1:8000/blog/{search_query}")
-            # put the result in a list even though it is a single dict
-            blogs = [response.json().get('data', [])]
-        
-        else:
-            try:
-                response = requests.get("http://127.0.0.1:8000/all/blogs")
+def update_blog_feed(n_clicks, n_intervals, search_query):
 
-                # check the status code
-                response.raise_for_status()
-                blogs = response.json().get('data', [])
+    if n_intervals == 0:
+        try:
+            response = requests.get("http://127.0.0.1:8000/all/blogs")
+            # check the status code
+            response.raise_for_status()
+            blogs = response.json().get('data', [])
 
-            except requests.RequestException as e:
+        except requests.RequestException as e:
                 return [html.P(f"Error: {str(e)}")]
+        
+        feed = []
+        for blog in blogs:
+            feed.append(
+                dbc.Card(
+                    dbc.CardBody(
+                        [
+                            html.H5(blog.get('title', 'No title'), className="card-title"),
+                            html.P(blog.get('sub_title', 'No subtitle'), className="card-text"),
+                            html.P(blog.get('content', 'No content'), className="card-text"),
+                            html.P(f"By {blog.get('author', 'Unknown author')}", className="card-subtitle"),
+                        ]
+                    ),
+                    className="mb-3"
+                )
+            )
             
-            # Create HTML content for blog feed
-            if not blogs:
-                return [html.P("No blogs found.")]
+        return feed
+        
+    elif n_clicks > 0:
+
+        if search_query:
+            try:
+                response = requests.get(f"http://127.0.0.1:8000/blog/{search_query}")
+
+                # put the result in a list even though it is a single dict
+                blogs = [response.json().get('data', [])]
+                # print(len(blogs))
+            
+            except requests.RequestException as e:
+                return [html.P("No blogs match your search criteria")]
             
         feed = []
         for blog in blogs:
@@ -97,44 +118,5 @@ def update_blog_feed(n_clicks, search_query):
                     className="mb-3"
                 )
             )
+            
         return feed
-        
-    return [html.P("Enter a search query")]
-
-
-# # Callback to search blogs and update the feed
-# @callback(
-#     Output("blog-feed", "children"),
-#     Input("search-blogs-button", "n_clicks"), 
-#     State("search-field", "value")
-# )
-
-# def update_blog_feed(n_clicks, search_query):
-#     if search_query:
-#         # Call the FastAPI search route
-#         response = requests.get(f"http://127.0.0.1:8050/search/blogs?query={search_query}")
-#         blogs = response.json().get('blogs', [])
-#     else:
-#         # If no search, show latest blogs
-#         response = requests.get("http://127.0.0.1:8050/all/blogs")
-#         blogs = response.json().get('blogs', [])
-
-#     # Create HTML content for blog feed
-#     if not blogs:
-#         return [html.P("No blogs found.")]
-    
-#     feed = []
-#     for blog in blogs:
-#         feed.append(
-#             dbc.Card(
-#                 dbc.CardBody(
-#                     [
-#                         html.H5(blog['title'], className="card-title"),
-#                         html.P(blog['content'], className="card-text"),
-#                         html.P(f"By {blog['author']}", className="card-subtitle"),
-#                     ]
-#                 ),
-#                 className="mb-3"
-#             )
-#         )
-#     return feed
