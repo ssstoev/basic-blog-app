@@ -9,7 +9,7 @@ def create_layout():
                     dbc.Row(dbc.Navbar(
                         dbc.Container(
                             [
-                                dbc.NavbarBrand(html.B("Blog App", style={"fontSize": "2rem"}), className="ms-2"),  # Blog App title
+                                dbc.NavbarBrand(html.B("FastAPI Blog App", style={"fontSize": "2rem"}), className="ms-2"),  # Blog App title
                                 dbc.Nav(
                                     dbc.NavItem(dbc.Button("Create Post", id='create-post-button', color="primary", className="ms-2")),  # Create Post button
                                     className="ms-auto",  # Push the button to the right
@@ -19,6 +19,7 @@ def create_layout():
                         color="primary",  # Set the navbar color
                         dark=True,  # Make the text light to contrast the dark background
                         className="mb-4",  # Margin below the navbar
+                        fixed="top"
                         )
                     ),
 
@@ -29,7 +30,7 @@ def create_layout():
                             dbc.Input(placeholder='Search...', id='search-field'), width=4
                         ),
                         dbc.Col(dbc.Button('Search', id='search-blogs-button'), width=1)
-                    ]),
+                    ], style={"padding-top": "100px"}),
 
                     dcc.Interval(id='page-load-trigger', n_intervals=0, max_intervals=1),
                     dbc.Row([
@@ -37,7 +38,7 @@ def create_layout():
                         dbc.Col(
                             dbc.Card([
                                 dbc.CardHeader(html.P(
-                                    html.B('News Feed'),
+                                    html.B('Latest Blogs'),
                                     style={'fontSize': '2rem'},
                                     className='text-center')),
 
@@ -71,7 +72,7 @@ def create_layout():
                         [
                             dbc.Modal(
                                 [
-                                    dbc.ModalHeader(dbc.ModalTitle("Header")),
+                                    dbc.ModalHeader(dbc.ModalTitle("Create a Blog Post"), close_button=False),
                                     dbc.ModalBody([
                                             dbc.Row(dbc.Col(html.Div(id='blog-content'))),
                                             dbc.Row(
@@ -93,6 +94,13 @@ def create_layout():
                                                     width=8
                                                 ), style={'padding-top': '20px'}
                                             ),
+
+                                            dbc.Row(
+                                                dbc.Col(
+                                                    dbc.Input(id='hashtags-input', type='text', placeholder='#hasthags'), width=4
+                                                ), style={'padding-top': '20px'}
+                                            ),
+
                                             dbc.Row(
                                                 dbc.Col(
                                                     dbc.Button('Submit', id='submit-blog', color='primary', className='mt-3'),
@@ -100,7 +108,8 @@ def create_layout():
                                                 )
                                             ),
 
-                                            dbc.Row(dbc.Col(dbc.Alert(id = 'post-alert', duration=10000, is_open=False), width=4)),
+                                            dbc.Row(dbc.Col(dbc.Alert(id = 'post-alert', duration=10000, is_open=False), width=4),
+                                                    style={"padding-top": "20px"}),
                                             html.Div(id='output')
                                 ]),
                                     dbc.ModalFooter(
@@ -111,7 +120,9 @@ def create_layout():
                                 ],
                                 id="create-blog-modal",
                                 is_open=False,
-                                size='lg'
+                                size='lg',
+                                backdrop='static'
+                                
                             ),
                         ]
                     )],

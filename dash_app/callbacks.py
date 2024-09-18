@@ -1,6 +1,7 @@
 from dash import Dash, dcc, html, Input, Output, State, callback
 import requests
 import dash_bootstrap_components as dbc
+import datetime as dt
 
 # callback to post blog and upload in db
 @callback(
@@ -10,19 +11,21 @@ import dash_bootstrap_components as dbc
     Input('submit-blog', 'n_clicks'),
     State('input-title', 'value'),
     State('sub-title-input', 'value'),
-    State('input-content', 'value')
+    State('input-content', 'value'),
+    State('hashtags-input', 'value')
 )
 
-def submit_blog(n_clicks, title, sub_title, content):
+def submit_blog(n_clicks, title, sub_title, content, hasthags):
     if n_clicks:
         print('button pressed')
-        if not title or not content:
-            return True, 'Title and content fileds must be both filled!', 'red'
+        if not title:
+            return True, 'Title is a mandatory field!', 'danger'
         
         blog_data = {
             'title': title,
             'sub_title': sub_title,
-            'content': content
+            'content': content,
+            'tags': [hasthags]
         }
 
         try:
@@ -30,12 +33,12 @@ def submit_blog(n_clicks, title, sub_title, content):
 
             # Check if the request was successful
             if response.status_code == 200:
-                return True, "Blog posted successfully!", "green"
+                return True, "Blog posted successfully!", "success"
             else:
-                return True, f"Failed to post blog. Status code: {response.status_code}, Error: {response.text}", "red"
+                return True, f"Failed to post blog. Status code: {response.status_code}, Error: {response.text}", "danger"
 
         except Exception as e:
-            return True, f"An error occurred: {str(e)}", 'red'
+            return True, f"An error occurred: {str(e)}", 'danger'
         
     return False, "", ""
     
@@ -52,6 +55,17 @@ def open_modal(n1, n2, is_open):
     if n1 or n2:
         return not is_open
     return is_open
+
+
+
+# Function to safely convert date strings to datetime objects
+def parse_date(date_str):
+    try:
+        return dt.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        # Handle cases where the date string is not in the expected format
+        print(f"Date format error: {date_str}")
+        return dt.min  # Or handle the error as needed
 
 #update the blog feed when you click search
 @callback(
@@ -73,18 +87,28 @@ def update_blog_feed(n_clicks, n_intervals, search_query):
                 return [html.P(f"Error: {str(e)}")]
         
         feed = []
+        #sorted_blogs = sorted(blogs, key=lambda x: parse_date(x['date']))
+        # print(sorted_blogs)
         for blog in blogs:
+            # print(blog['date'])
             feed.append(
-                dbc.Card(
-                    dbc.CardBody(
-                        [
+                dbc.Card([
+                    dbc.CardHeader([
                             html.H5(blog.get('title', 'No title'), className="card-title"),
                             html.P(blog.get('sub_title', 'No subtitle'), className="card-text"),
+                    ]),
+                    dbc.CardBody(
+                        [
                             html.P(blog.get('content', 'No content'), className="card-text"),
-                            html.P(f"By {blog.get('author', 'Unknown author')}", className="card-subtitle"),
+                            html.P(f"By {blog.get('author', 'Unknown author')}", className="card-subtitle")
                         ]
                     ),
-                    className="mb-3"
+
+                    dbc.CardFooter([
+                        html.P(f"{blog.get('tags', 'No tags')}", className="card-subtitle")
+                    ])
+
+                    ], className="mb-3"
                 )
             )
             
@@ -117,16 +141,21 @@ def update_blog_feed(n_clicks, n_intervals, search_query):
         feed = []
         for blog in blogs:
             feed.append(
-                dbc.Card(
-                    dbc.CardBody(
-                        [
+                dbc.Card([
+                    dbc.CardHeader([
                             html.H5(blog.get('title', 'No title'), className="card-title"),
                             html.P(blog.get('sub_title', 'No subtitle'), className="card-text"),
+                    ]),
+                    dbc.CardBody(
+                        [
                             html.P(blog.get('content', 'No content'), className="card-text"),
                             html.P(f"By {blog.get('author', 'Unknown author')}", className="card-subtitle"),
                         ]
                     ),
-                    className="mb-3"
+                    dbc.CardFooter([
+                        html.P(f"{blog.get('tags', 'No tags')}", className="card-subtitle")
+                    ])
+                    ], className="mb-3"
                 )
             )
             

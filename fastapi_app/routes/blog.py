@@ -17,7 +17,7 @@ blog_root = APIRouter()
 def NewBlog(data: BlogModel):
     data = dict(data) #convert the data to py dict
 
-    current_date = dt.date.today()
+    current_date = dt.datetime.now()
     data['date'] = str(current_date)
 
     # add the new post to the DB
