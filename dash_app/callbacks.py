@@ -1,7 +1,7 @@
 from dash import Dash, dcc, html, Input, Output, State, callback
 import requests
 import dash_bootstrap_components as dbc
-import datetime as dt
+import datetime 
 
 # callback to post blog and upload in db
 @callback(
@@ -61,11 +61,15 @@ def open_modal(n1, n2, is_open):
 # Function to safely convert date strings to datetime objects
 def parse_date(date_str):
     try:
-        return dt.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+        return datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S.%f')
     except ValueError:
         # Handle cases where the date string is not in the expected format
         print(f"Date format error: {date_str}")
-        return dt.min  # Or handle the error as needed
+        return datetime.min  # Or handle the error as needed
+
+# Function to convert the date string to a datetime object
+# def parse_date(date_str):
+#     return datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S.%f')
 
 #update the blog feed when you click search
 @callback(
@@ -87,10 +91,9 @@ def update_blog_feed(n_clicks, n_intervals, search_query):
                 return [html.P(f"Error: {str(e)}")]
         
         feed = []
-        #sorted_blogs = sorted(blogs, key=lambda x: parse_date(x['date']))
-        # print(sorted_blogs)
-        for blog in blogs:
-            # print(blog['date'])
+        # Sort the blogs by 'date' in descending order (latest first)
+        sorted_blogs = sorted(blogs, key=lambda x: parse_date(x['date']), reverse=True)
+        for blog in sorted_blogs:
             feed.append(
                 dbc.Card([
                     dbc.CardHeader([
