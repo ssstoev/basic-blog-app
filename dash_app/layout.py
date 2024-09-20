@@ -29,7 +29,7 @@ def create_layout():
                         dbc.Col(
                             dbc.Input(placeholder='Search...', id='search-field'), width=4
                         ),
-                        dbc.Col(dbc.Button('Search', id='search-blogs-button'), width=1)
+                        dbc.Col(dbc.Button('Search', id='search-blogs-button', n_clicks=0), width=1)
                     ], style={"padding-top": "100px"}),
 
                     dcc.Interval(id='page-load-trigger', n_intervals=0, max_intervals=1),
