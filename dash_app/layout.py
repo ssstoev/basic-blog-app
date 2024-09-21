@@ -53,7 +53,7 @@ def create_layout():
                         dbc.Col(dbc.Card([
                             dbc.CardHeader(
                                 html.P(
-                                    html.B('AI Q&A'),
+                                    html.B('Sentiment Score'),
                                     className='text-center',
                                     style={'fontSize': '2rem'}
                                 )
